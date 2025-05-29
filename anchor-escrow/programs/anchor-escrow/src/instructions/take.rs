@@ -106,9 +106,9 @@ impl<'info> Take<'info> {
                 self.token_program.to_account_info(),
                 TransferChecked {
                     from: self.vault.to_account_info(),
-                    to: self.maker_ata_token_b.to_account_info(),
+                    to: self.taker_ata_token_a.to_account_info(),
                     authority: self.escrow.to_account_info(),
-                    mint: self.mint_b.to_account_info(),
+                    mint: self.mint_a.to_account_info(),
                 },
                 &[&[
                     "escrow".as_bytes(),

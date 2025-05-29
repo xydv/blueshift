@@ -6,7 +6,7 @@ mod state;
 
 use instructions::*;
 
-declare_id!("DgkdUz3kCjjQKXyn13GWb3YcvEqbqYf9bCUNuNfbCCwa");
+declare_id!("22222222222222222222222222222222222222222222");
 
 #[program]
 pub mod anchor_escrow {
@@ -22,8 +22,8 @@ pub mod anchor_escrow {
         instructions::take::handler(ctx)
     }
 
-    // #[instruction(discriminator = 2)]
-    // pub fn refund(ctx: Context<Refund>) -> Result<()> {
-    //     Ok(())
-    // }
+    #[instruction(discriminator = 2)]
+    pub fn refund(ctx: Context<Refund>) -> Result<()> {
+        instructions::refund::handler(ctx)
+    }
 }

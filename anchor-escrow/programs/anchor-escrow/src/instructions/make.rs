@@ -58,7 +58,7 @@ impl<'info> Make<'info> {
             seed,
             maker: self.maker.key(),
             mint_a: self.mint_a.key(),
-            mint_b: self.mint_a.key(),
+            mint_b: self.mint_b.key(),
             recieve: amount,
             bump,
         });
@@ -73,7 +73,7 @@ impl<'info> Make<'info> {
                 TransferChecked {
                     from: self.maker_ata_token_a.to_account_info(),
                     to: self.vault.to_account_info(),
-                    authority: self.vault.to_account_info(),
+                    authority: self.maker.to_account_info(),
                     mint: self.mint_a.to_account_info(),
                 },
             ),
