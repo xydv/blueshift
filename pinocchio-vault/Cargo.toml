@@ -1,6 +1,13 @@
+cargo-features = ["edition2024"]
+
 [package]
 name = "pinocchio-vault"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["lib", "cdylib"]
+
 [dependencies]
+pinocchio = "0.8.4"
+pinocchio-system = "0.2.3"
