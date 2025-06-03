@@ -1,7 +1,8 @@
 use pinocchio::{
-    account_info::AccountInfo, program_error::ProgramError, pubkey::find_program_address,
+    ProgramResult, account_info::AccountInfo, program_error::ProgramError,
+    pubkey::find_program_address,
 };
-use pinocchio_system::ID;
+use pinocchio_system::{ID, instructions::Transfer};
 
 pub struct DepositAccounts<'a> {
     pub owner: &'a AccountInfo,
@@ -79,3 +80,17 @@ impl<'a> TryFrom<(&'a [u8], &'a [AccountInfo])> for Deposit<'a> {
     }
 }
 
+impl<'a> Deposit<'a> {
+    pub const DISCRIMINATOR: &'a u8 = &0;
+
+    pub fn process(&self) -> ProgramResult {
+        Transfer {
+            from: self.accounts.owner,
+            to: self.accounts.vault,
+            lamports: self.instruction_datas.amount,
+        }
+        .invoke()?;
+
+        Ok(())
+    }
+}
