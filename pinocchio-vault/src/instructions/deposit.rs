@@ -89,8 +89,6 @@ impl<'a> Deposit<'a> {
             to: self.accounts.vault,
             lamports: self.instruction_datas.amount,
         }
-        .invoke()?;
-
-        Ok(())
+        .invoke()
     }
 }

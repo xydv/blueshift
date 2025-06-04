@@ -1,14 +1,13 @@
 #![no_std]
 
 use pinocchio::{
-    ProgramResult, account_info::AccountInfo, entrypoint, nostd_panic_handler, pubkey::Pubkey,
+    ProgramResult, account_info::AccountInfo, entrypoint, nostd_panic_handler,
+    program_error::ProgramError, pubkey::Pubkey,
 };
 
 pub mod instructions;
 
-use instructions::*;
-
-use crate::instructions::deposit::Deposit;
+use crate::instructions::{deposit::Deposit, withdraw::Withdraw};
 
 entrypoint!(process_instruction);
 nostd_panic_handler!();
@@ -19,17 +18,13 @@ pub const ID: Pubkey = [
 ];
 
 fn process_instruction(
-    program_id: &Pubkey,
+    _program_id: &Pubkey,
     accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> ProgramResult {
     match instruction_data.split_first() {
-        Some((Deposit::DISCRIMINATOR, data)) => {
-            Deposit::try_from((data, accounts))?.process()?;
-        }
-        None => {}
-        _ => {}
+        Some((Deposit::DISCRIMINATOR, data)) => Deposit::try_from((data, accounts))?.process(),
+        Some((Withdraw::DISCRIMINATOR, _)) => Withdraw::try_from(accounts)?.process(),
+        _ => Err(ProgramError::InvalidInstructionData),
     }
-
-    Ok(())
 }
