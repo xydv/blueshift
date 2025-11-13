@@ -13,12 +13,12 @@ use pinocchio::{
 use pinocchio_system::instructions::CreateAccount;
 use pinocchio_token::instructions::Transfer;
 
-use crate::{get_token_amount, LoanData, ID};
+use crate::{get_token_amount, LoanData, Repay, ID};
 
 pub struct LoanAccounts<'a> {
     pub borrower: &'a AccountInfo,
-    pub loan: &'a AccountInfo,
     pub protocol: &'a AccountInfo,
+    pub loan: &'a AccountInfo,
     pub instruction_sysvar: &'a AccountInfo,
     pub token_accounts: &'a [AccountInfo],
 }
@@ -35,7 +35,7 @@ impl<'a> TryFrom<&'a [AccountInfo]> for LoanAccounts<'a> {
         };
 
         // valid sysvar
-        if pubkey_eq(instruction_sysvar.key(), &INSTRUCTIONS_ID) {
+        if !pubkey_eq(instruction_sysvar.key(), &INSTRUCTIONS_ID) {
             return Err(ProgramError::UnsupportedSysvar);
         };
 
@@ -51,8 +51,8 @@ impl<'a> TryFrom<&'a [AccountInfo]> for LoanAccounts<'a> {
 
         Ok(Self {
             borrower,
-            loan,
             protocol,
+            loan,
             instruction_sysvar,
             token_accounts,
         })
@@ -197,7 +197,12 @@ impl<'a> Loan<'a> {
             return Err(ProgramError::InvalidInstructionData);
         }
 
-        // todo: check repay discriminator
+        // repay only has discriminator as instruction data
+        let discriminator = unsafe { *(instruction.get_instruction_data().as_ptr()) };
+
+        if discriminator != *Repay::DISCRIMINATOR {
+            return Err(ProgramError::InvalidInstructionData);
+        }
 
         let instructions_loan_key = unsafe { instruction.get_account_meta_at_unchecked(1).key };
 
